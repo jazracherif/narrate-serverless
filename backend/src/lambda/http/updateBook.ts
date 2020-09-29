@@ -4,30 +4,31 @@ import { cors } from 'middy/middlewares'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { parseUserId } from '../../auth/utils'
-import { getUserTodos } from '../../businessLogic/todos'
+import { UpdateBookRequest } from '../../requests/UpdateBookRequest'
+import { updateBook } from '../../businessLogic/books'
 
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const bookId = event.pathParameters.bookId
     const userId = getUserId(event)
 
+    const updatedBook: UpdateBookRequest = JSON.parse(event.body)
+
     try {
-        const items = await getUserTodos(userId)
+        await updateBook(bookId, userId, updatedBook)
 
         return {
-                statusCode: 200,
-                body: JSON.stringify({
-                            items: items
-                        })
-            }
+            statusCode: 200,
+            body: ''
+          }
+    
     } catch(e) {
         console.log(e)
 
         return {
             statusCode: 400,
-            body: JSON.stringify({
-                items: []
-            })
-        }
+            body: ''
+          }    
     }
 })
 
@@ -36,7 +37,6 @@ handler.use(
       credentials: true
     })
   )
-
 
 function getUserId(event): string {
     const authorization = event.headers.Authorization

@@ -3,26 +3,30 @@ import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { deleteTodo } from '../../businessLogic/todos'
 import { parseUserId } from '../../auth/utils'
+import { getUserBooks } from '../../businessLogic/books'
+
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
     const userId = getUserId(event)
 
     try {
-        await deleteTodo(todoId, userId)
+        const items = await getUserBooks(userId)
 
         return {
                 statusCode: 200,
-                body: ''
+                body: JSON.stringify({
+                            items: items
+                        })
             }
     } catch(e) {
         console.log(e)
 
         return {
             statusCode: 400,
-            body: ''
+            body: JSON.stringify({
+                items: []
+            })
         }
     }
 })
