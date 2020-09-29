@@ -3,14 +3,14 @@ import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 import { parseUserId } from '../../auth/utils'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { generateAndUploadUrl } from '../../businessLogic/todos'
+import { generateAndUploadUrl } from '../../businessLogic/books'
   
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const todoId = event.pathParameters.todoId
+  const bookId = event.pathParameters.bookId
   const userId = getUserId(event)
 
   try {
-    const url = await generateAndUploadUrl(todoId, userId)
+    const url = await generateAndUploadUrl(bookId, userId)
     
     return {
         statusCode: 201,

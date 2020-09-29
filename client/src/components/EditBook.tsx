@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import Auth from '../auth/Auth'
-import { getUploadUrl, uploadFile } from '../api/todos-api'
+import { getUploadUrl, uploadFile } from '../api/books-api'
 
 enum UploadState {
   NoUpload,
@@ -9,25 +9,25 @@ enum UploadState {
   UploadingFile,
 }
 
-interface EditTodoProps {
+interface EditBookProps {
   match: {
     params: {
-      todoId: string
+      bookId: string
     }
   }
   auth: Auth
 }
 
-interface EditTodoState {
+interface EditBookState {
   file: any
   uploadState: UploadState
 }
 
-export class EditTodo extends React.PureComponent<
-  EditTodoProps,
-  EditTodoState
+export class EditBook extends React.PureComponent<
+  EditBookProps,
+  EditBookState
 > {
-  state: EditTodoState = {
+  state: EditBookState = {
     file: undefined,
     uploadState: UploadState.NoUpload
   }
@@ -42,6 +42,7 @@ export class EditTodo extends React.PureComponent<
   }
 
   handleSubmit = async (event: React.SyntheticEvent) => {
+    /* Create a signedUrl and upload a file to that URL */    
     event.preventDefault()
 
     try {
@@ -51,7 +52,7 @@ export class EditTodo extends React.PureComponent<
       }
 
       this.setUploadState(UploadState.FetchingPresignedUrl)
-      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.todoId)
+      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.bookId)
 
       this.setUploadState(UploadState.UploadingFile)
       await uploadFile(uploadUrl, this.state.file)
@@ -80,8 +81,8 @@ export class EditTodo extends React.PureComponent<
             <label>File</label>
             <input
               type="file"
-              accept="image/*"
-              placeholder="Image to upload"
+              accept="text/*"
+              placeholder="Text to upload"
               onChange={this.handleFileChange}
             />
           </Form.Field>

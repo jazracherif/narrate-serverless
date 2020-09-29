@@ -5,28 +5,28 @@ import { cors } from 'middy/middlewares'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
+import { CreateBookRequest } from '../../requests/CreateBookRequest'
 import { parseUserId } from '../../auth/utils'
-import { createTodo } from '../../businessLogic/todos'
+import { createBook } from '../../businessLogic/books'
 
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const newTodo: CreateTodoRequest = JSON.parse(event.body)
+    const newBook: CreateBookRequest = JSON.parse(event.body)
     const userId = getUserId(event)    
     
     try {
-        const todoItem = await createTodo(userId, newTodo.name, newTodo.dueDate)
+        const bookItem = await createBook(userId, newBook.name, newBook.dueDate)
 
         return {
             statusCode: 201,
             body: JSON.stringify({
                 item: {            
-                    todoId: todoItem.todoId,
-                    createdAt: todoItem.createdAt,
-                    name: todoItem.name,
-                    dueDate: todoItem.dueDate,
-                    done: todoItem.done,            
-                    attachmentUrl: todoItem.attachmentUrl
+                    bookId: bookItem.bookId,
+                    createdAt: bookItem.createdAt,
+                    name: bookItem.name,
+                    dueDate: bookItem.dueDate,
+                    done: bookItem.done,            
+                    attachmentUrl: bookItem.attachmentUrl
                     }
                 })
         }

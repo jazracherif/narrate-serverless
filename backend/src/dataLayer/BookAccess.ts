@@ -5,27 +5,27 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 const XAWS = AWSXRay.captureAWS(AWS)
 const s3 = new XAWS.S3({signatureVersion: 'v4'})
 
-import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { BookItem } from '../models/BookItem'
+import { BookUpdate } from '../models/BookUpdate'
 
-export class TodoAccess {
+export class BookAccess {
 
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly toDoTable = process.env.TODO_TABLE,
-    private readonly toDoIndexTable = process.env.USER_ID_INDEX,
+    private readonly bookTable = process.env.BOOK_TABLE,
+    private readonly bookIndexTable = process.env.USER_ID_INDEX,
     private readonly urlExpiration = process.env.URL_EXPIRATION,
     private readonly imagesS3Bucket = process.env.IMAGES_S3_BUCKET
 
     ) { }
 
-  async getUserTodos(userId: String): Promise<TodoItem[]> {
-    console.log('Getting all Todos for user', userId)
+  async getUserBooks(userId: String): Promise<BookItem[]> {
+    console.log('Getting all Books for user', userId)
 
     const result = await this.docClient.query({
-        TableName: this.toDoTable,
-        IndexName: this.toDoIndexTable,
-        ProjectionExpression: "todoId, createdAt, #na, dueDate, done, attachmentUrl",
+        TableName: this.bookTable,
+        IndexName: this.bookIndexTable,
+        ProjectionExpression: "bookId, createdAt, #na, dueDate, done, attachmentUrl",
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
             ':userId': userId
@@ -38,34 +38,34 @@ export class TodoAccess {
 
 
     const items = result.Items
-    return items as TodoItem[]
+    return items as BookItem[]
   }
 
-  async createTodo(todoItem: TodoItem): Promise<TodoItem> {
-    console.log('Create Todo Item ', todoItem)
+  async createBook(bookItem: BookItem): Promise<BookItem> {
+    console.log('Create Book Item ', bookItem)
 
     await this.docClient.put({
-        TableName: this.toDoTable,
-        Item: todoItem
+        TableName: this.bookTable,
+        Item: bookItem
         }).promise()
 
-    return todoItem
+    return bookItem
     }
 
-    async updateTodo(todoId: string, userId: string, todoUpdate: TodoUpdate){
-        console.log('Update Todo Item ', todoId, todoUpdate)
+    async updateBook(bookId: string, userId: string, bookUpdate: BookUpdate){
+        console.log('Update Book Item ', bookId, bookUpdate)
 
         const param = {
-            TableName: this.toDoTable,
+            TableName: this.bookTable,
             Key: { 
-                "todoId": todoId, 
+                "bookId": bookId, 
                 "userId": userId 
             },
-            UpdateExpression: "set #na = :todoName, dueDate = :dueDate, done = :done",
+            UpdateExpression: "set #na = :bookName, dueDate = :dueDate, done = :done",
             ExpressionAttributeValues: {
-                ":todoName": todoUpdate.name,
-                ":dueDate": todoUpdate.dueDate,
-                ":done": todoUpdate.done
+                ":bookName": bookUpdate.name,
+                ":dueDate": bookUpdate.dueDate,
+                ":done": bookUpdate.done
             },
             ExpressionAttributeNames: {
                 "#na": "name"
@@ -76,15 +76,15 @@ export class TodoAccess {
         return await this.docClient.update(param).promise()
     }
 
-    async updateTodoUrl(todoId: string, userId: string){
-        const attachmentUrl = `https://${this.imagesS3Bucket}.s3.amazonaws.com/${todoId}`
+    async updateBookUrl(bookId: string, userId: string){
+        const attachmentUrl = `https://${this.imagesS3Bucket}.s3.amazonaws.com/${bookId}`
     
-        console.log('Update Todo Url ', todoId, userId, attachmentUrl)
+        console.log('Update book Url ', bookId, userId, attachmentUrl)
 
         const param = {
-            TableName: this.toDoTable,
+            TableName: this.bookTable,
             Key: { 
-                "todoId": todoId, 
+                "bookId": bookId, 
                 "userId": userId 
             },
             UpdateExpression: "set attachmentUrl = :attachmentUrl",
@@ -97,24 +97,24 @@ export class TodoAccess {
         return await this.docClient.update(param).promise()
     }
 
-    async deleteTodo(todoId: string, userId: string){
-        console.log('Delete Todo Item ', todoId)
+    async deleteBook(bookId: string, userId: string){
+        console.log('Delete book Item ', bookId)
 
         return await this.docClient.delete({
-            TableName: this.toDoTable,
+            TableName: this.bookTable,
             Key: { 
-                "todoId": todoId, 
+                "bookId": bookId, 
                 "userId": userId 
             },
             }).promise()
     }
 
-    getSignedUrl(todoId: string){
-        console.log('Get Signed URL for Todo Item ', todoId)
+    getSignedUrl(bookId: string){
+        console.log('Get Signed URL for book Item ', bookId)
 
         return s3.getSignedUrl('putObject', {
                     Bucket: this.imagesS3Bucket,
-                    Key: todoId,
+                    Key: bookId,
                     Expires: Number(this.urlExpiration)
                     })
                 }
