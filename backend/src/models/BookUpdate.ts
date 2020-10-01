@@ -3,4 +3,5 @@ export interface BookUpdate {
   author: string
   rating: number
   done: boolean
+  review: string
 }

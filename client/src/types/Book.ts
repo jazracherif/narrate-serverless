@@ -6,4 +6,5 @@ export interface Book {
   done: boolean
   attachmentUrl?: string
   rating: number
+  review: string
 }

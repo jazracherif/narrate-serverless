@@ -30,6 +30,7 @@ interface BooksState {
   newBookAuthor: string
   newBookRating: number
   loadingBooks: boolean
+  newReview: string
 }
 
 export class Books extends React.PureComponent<BooksProps, BooksState> {
@@ -38,7 +39,8 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     newBookTitle: '',
     newBookAuthor: '',
     newBookRating: 0,
-    loadingBooks: true
+    loadingBooks: true,
+    newReview: ''
   }
 
   handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +51,14 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     this.setState({ newBookAuthor: event.target.value })
   }
 
+  handleReviewChange = (value: string, pos: number) => {
+    this.setState({
+        books: update(this.state.books, {
+          [pos]: { review: { $set: value } }
+            })
+        })
+    }
+
   onEditButtonClick = (bookId: string) => {
     this.props.history.push(`/Books/${bookId}/edit`)
   }
@@ -58,7 +68,8 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
       const newBook = await createBook(this.props.auth.getIdToken(), {
         title: this.state.newBookTitle,
         author: this.state.newBookAuthor,
-        rating: this.state.newBookRating
+        rating: this.state.newBookRating,
+        review: this.state.newReview
       })
       this.setState({
         books: [...this.state.books, newBook],
@@ -88,7 +99,8 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         title: book.title,
         author: book.author,
         done: !book.done,
-        rating: book.rating
+        rating: book.rating,
+        review: book.review
       })
       this.setState({
         books: update(this.state.books, {
@@ -106,14 +118,32 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
       await patchBook(this.props.auth.getIdToken(), book.bookId, {
         title: book.title,
         author: book.author,
-        done: !book.done,
-        rating: value
+        done: book.done,
+        rating: value,
+        review: book.review
       })
       this.setState({
         books: update(this.state.books, {
           [pos]: { rating: { $set: value} }
         })
       })
+    } catch {
+      alert('Book Update failed')
+    }
+  }
+
+  onSubmitReview = async (pos: number) => {
+    try {
+      const book = this.state.books[pos]
+      await patchBook(this.props.auth.getIdToken(), book.bookId, {
+        title: book.title,
+        author: book.author,
+        done: book.done,
+        rating: book.rating,
+        review: book.review
+      })
+      alert("Book Review Updated!")
+
     } catch {
       alert('Book Update failed')
     }
@@ -244,10 +274,24 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
               {/* {book.attachmentUrl && (
                  <embed src={book.attachmentUrl}/>
               )} */}
+              <Grid.Column width={16} floated="left">
+                  <textarea
+                    rows={2}
+                    cols={50}
+                    value={book.review}
+                    onChange={(event) => this.handleReviewChange(event.target.value, pos)} 
+                    >
+                  </textarea>
+                  <Button color= 'teal'
+                     content= 'Update Review'
+                     onClick= {()=>this.onSubmitReview(pos)}>
+                  </Button>
+              </Grid.Column>
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>
             </Grid.Row>
+
           )
         })}
       </Grid>

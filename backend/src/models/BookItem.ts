@@ -7,4 +7,5 @@ export interface BookItem {
   rating: number
   done: boolean
   attachmentUrl?: string
+  review: string
 }

@@ -11,6 +11,9 @@
       },
       "rating": {
         "type": "number"
+      },
+      "review": {
+        "type": "string"
       }
     },
     "required": [
