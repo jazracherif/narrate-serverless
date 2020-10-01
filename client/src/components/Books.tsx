@@ -17,6 +17,7 @@ import {
 import { createBook, deleteBook, getBooks, patchBook } from '../api/books-api'
 import Auth from '../auth/Auth'
 import { Book } from '../types/Book'
+import StarRatingComponent from 'react-star-rating-component';
 
 interface BooksProps {
   auth: Auth
@@ -27,6 +28,7 @@ interface BooksState {
   books: Book[]
   newBookTitle: string
   newBookAuthor: string
+  newBookRating: number
   loadingBooks: boolean
 }
 
@@ -35,6 +37,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     books: [],
     newBookTitle: '',
     newBookAuthor: '',
+    newBookRating: 0,
     loadingBooks: true
   }
 
@@ -52,11 +55,10 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
 
   onBookCreate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
-      const dueDate = this.calculateDueDate()
       const newBook = await createBook(this.props.auth.getIdToken(), {
         title: this.state.newBookTitle,
         author: this.state.newBookAuthor,
-        dueDate
+        rating: this.state.newBookRating
       })
       this.setState({
         books: [...this.state.books, newBook],
@@ -78,14 +80,15 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     }
   }
 
+  
   onBookCheck = async (pos: number) => {
     try {
       const book = this.state.books[pos]
       await patchBook(this.props.auth.getIdToken(), book.bookId, {
         title: book.title,
         author: book.author,
-        dueDate: book.dueDate,
-        done: !book.done
+        done: !book.done,
+        rating: book.rating
       })
       this.setState({
         books: update(this.state.books, {
@@ -93,7 +96,26 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         })
       })
     } catch {
-      alert('Book deletion failed')
+      alert('Book Update failed')
+    }
+  }
+
+  onBookRatingUpdate = async (value: number, pos: number) => {
+    try {
+      const book = this.state.books[pos]
+      await patchBook(this.props.auth.getIdToken(), book.bookId, {
+        title: book.title,
+        author: book.author,
+        done: !book.done,
+        rating: value
+      })
+      this.setState({
+        books: update(this.state.books, {
+          [pos]: { rating: { $set: value} }
+        })
+      })
+    } catch {
+      alert('Book Update failed')
     }
   }
 
@@ -127,13 +149,6 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         <Grid.Column width={16}>
             Book Title:
           <Input
-            // action={{
-            //   color: 'teal',
-            //   labelPosition: 'left',
-            //   icon: 'add',
-            //   content: 'Create New Book',
-            //   onClick: this.onBookCreate
-            // }}
             fluid
             actionPosition="left"
             placeholder="Moby Dick"
@@ -143,13 +158,6 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         <Grid.Column width={16}>
             Book Author:
           <Input
-            // action={{
-            //   color: 'teal',
-            //   labelPosition: 'left',
-            //   icon: 'add',
-            //   content: 'Create New Book',
-            //   onClick: this.onBookCreate
-            // }}
             fluid
             actionPosition="left"
             placeholder="Herman Melville"
@@ -157,7 +165,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
           />
         </Grid.Column>
         <Button color= 'teal'
-                content= 'Create New Book'
+                content= 'Add New Book'
                 onClick= {this.onBookCreate}>
         </Button>
         <Grid.Column width={16}>
@@ -193,19 +201,27 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
           return (
             <Grid.Row key={book.bookId}>
               <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
+                {<Checkbox
                   onChange={() => this.onBookCheck(pos)}
-                  checked={book.done}
-                />
+                  checked={book.done}></Checkbox>
+                }
+              </Grid.Column>               
+              <Grid.Column width={2} verticalAlign="middle">  
+                { 
+                <StarRatingComponent
+                    value={book.rating}
+                    onStarClick={(nextValue, prevValue, name) => this.onBookRatingUpdate(nextValue, pos)}
+                    starCount={5}
+                    emptyStarColor='grey'
+                    name='rating'
+                 />
+                }
               </Grid.Column>
-              <Grid.Column width={5} verticalAlign="middle">
+              <Grid.Column width={4} verticalAlign="middle">
                 {book.title}
               </Grid.Column>
-              <Grid.Column width={5} verticalAlign="middle">
+              <Grid.Column width={4} verticalAlign="middle">
                 {book.author}
-              </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {book.dueDate}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -238,10 +254,4 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     )
   }
 
-  calculateDueDate(): string {
-    const date = new Date()
-    date.setDate(date.getDate() + 7)
-
-    return dateFormat(date, 'yyyy-mm-dd') as string
-  }
 }

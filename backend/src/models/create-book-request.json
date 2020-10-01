@@ -9,14 +9,14 @@
       "author": {
         "type": "string"
       },
-      "dueDate": {
-        "type": "string"
+      "rating": {
+        "type": "number"
       }
     },
     "required": [
       "title",
       "author",
-      "dueDate"
+      "rating"
     ],
     "additionalProperties": false
   }

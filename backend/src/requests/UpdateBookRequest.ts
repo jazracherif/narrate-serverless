@@ -4,6 +4,6 @@
 export interface UpdateBookRequest {
   title: string
   author: string
-  dueDate: string
+  rating: number
   done: boolean
 }

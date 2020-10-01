@@ -9,8 +9,8 @@
       "author": {
         "type": "string"
       },
-      "dueDate": {
-        "type": "string"
+      "rating": {
+        "type": "number"
       },
       "done": {
         "type": "boolean"
@@ -19,7 +19,7 @@
     "required": [
       "title",
       "author",
-      "dueDate",
+      "rating",
       "done"
     ],
     "additionalProperties": false

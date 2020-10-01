@@ -4,7 +4,7 @@ export interface BookItem {
   createdAt: string
   title: string
   author: string
-  dueDate: string
+  rating: number
   done: boolean
   attachmentUrl?: string
 }

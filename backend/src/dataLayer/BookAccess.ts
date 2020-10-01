@@ -25,7 +25,7 @@ export class BookAccess {
     const result = await this.docClient.query({
         TableName: this.bookTable,
         IndexName: this.bookIndexTable,
-        ProjectionExpression: "bookId, createdAt, title, author, dueDate, done, attachmentUrl",
+        ProjectionExpression: "bookId, createdAt, title, author, rating, done, attachmentUrl",
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
             ':userId': userId
@@ -58,11 +58,11 @@ export class BookAccess {
                 "bookId": bookId, 
                 "userId": userId 
             },
-            UpdateExpression: "set title = :title, author = :author dueDate = :dueDate, done = :done",
+            UpdateExpression: "set title = :title, author = :author, rating = :rating, done = :done",
             ExpressionAttributeValues: {
                 ":title": bookUpdate.title,
                 ":author": bookUpdate.author,
-                ":dueDate": bookUpdate.dueDate,
+                ":rating": bookUpdate.rating,
                 ":done": bookUpdate.done
             },
             ReturnValues: "UPDATED_NEW"

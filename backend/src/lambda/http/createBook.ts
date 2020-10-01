@@ -15,7 +15,7 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
     const userId = getUserId(event)    
     
     try {
-        const bookItem = await createBook(userId, newBook.title, newBook.author, newBook.dueDate)
+        const bookItem = await createBook(userId, newBook.title, newBook.author, newBook.rating)
 
         return {
             statusCode: 201,
@@ -25,7 +25,7 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
                     createdAt: bookItem.createdAt,
                     title: bookItem.title,
                     author: bookItem.author,
-                    dueDate: bookItem.dueDate,
+                    rating: bookItem.rating,
                     done: bookItem.done,            
                     attachmentUrl: bookItem.attachmentUrl
                     }

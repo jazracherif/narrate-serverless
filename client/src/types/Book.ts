@@ -3,7 +3,7 @@ export interface Book {
   createdAt: string
   title: string
   author: string
-  dueDate: string
   done: boolean
   attachmentUrl?: string
+  rating: number
 }
