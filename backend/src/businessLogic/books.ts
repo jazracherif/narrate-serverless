@@ -27,7 +27,10 @@ export async function generateAndUploadUrl(bookId: string, userId: string) {
 }
 
 
-export async function createBook(userId: string, name: string, dueDate: string): Promise<BookItem>{
+export async function createBook(userId: string,
+                                 title: string, 
+                                 author: string,
+                                 dueDate: string): Promise<BookItem>{
 
     const bookId = uuid.v4()
     const createdAt = new Date().toISOString()
@@ -36,7 +39,8 @@ export async function createBook(userId: string, name: string, dueDate: string):
         userId: userId,
         bookId: bookId,
         createdAt: createdAt,
-        name: name,
+        title: title,
+        author: author,
         dueDate: dueDate,
         done: false,
         attachmentUrl: ''

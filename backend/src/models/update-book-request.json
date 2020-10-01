@@ -3,7 +3,10 @@
     "title": "todos",
     "type": "object",
     "properties": {
-      "name": {
+      "title": {
+        "type": "string"
+      },
+      "author": {
         "type": "string"
       },
       "dueDate": {
@@ -14,7 +17,8 @@
       }
     },
     "required": [
-      "name",
+      "title",
+      "author",
       "dueDate",
       "done"
     ],

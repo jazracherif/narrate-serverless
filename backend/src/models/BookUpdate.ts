@@ -1,5 +1,6 @@
 export interface BookUpdate {
-  name: string
+  title: string
+  author: string
   dueDate: string
   done: boolean
 }

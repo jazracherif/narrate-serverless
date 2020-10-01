@@ -25,35 +25,42 @@ interface BooksProps {
 
 interface BooksState {
   books: Book[]
-  newBookName: string
+  newBookTitle: string
+  newBookAuthor: string
   loadingBooks: boolean
 }
 
 export class Books extends React.PureComponent<BooksProps, BooksState> {
   state: BooksState = {
     books: [],
-    newBookName: '',
+    newBookTitle: '',
+    newBookAuthor: '',
     loadingBooks: true
   }
 
-  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newBookName: event.target.value })
+  handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ newBookTitle: event.target.value })
+  }
+
+  handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ newBookAuthor: event.target.value })
   }
 
   onEditButtonClick = (bookId: string) => {
     this.props.history.push(`/Books/${bookId}/edit`)
   }
 
-  onBookCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onBookCreate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
       const newBook = await createBook(this.props.auth.getIdToken(), {
-        name: this.state.newBookName,
+        title: this.state.newBookTitle,
+        author: this.state.newBookAuthor,
         dueDate
       })
       this.setState({
         books: [...this.state.books, newBook],
-        newBookName: ''
+        newBookTitle: ''
       })
     } catch {
       alert('Book creation failed')
@@ -75,7 +82,8 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     try {
       const book = this.state.books[pos]
       await patchBook(this.props.auth.getIdToken(), book.bookId, {
-        name: book.name,
+        title: book.title,
+        author: book.author,
         dueDate: book.dueDate,
         done: !book.done
       })
@@ -117,24 +125,46 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     return (
       <Grid.Row>
         <Grid.Column width={16}>
+            Book Title:
           <Input
-            action={{
-              color: 'teal',
-              labelPosition: 'left',
-              icon: 'add',
-              content: 'Create New Book',
-              onClick: this.onBookCreate
-            }}
+            // action={{
+            //   color: 'teal',
+            //   labelPosition: 'left',
+            //   icon: 'add',
+            //   content: 'Create New Book',
+            //   onClick: this.onBookCreate
+            // }}
             fluid
             actionPosition="left"
             placeholder="Moby Dick"
-            onChange={this.handleNameChange}
+            onChange={this.handleTitleChange}
           />
         </Grid.Column>
+        <Grid.Column width={16}>
+            Book Author:
+          <Input
+            // action={{
+            //   color: 'teal',
+            //   labelPosition: 'left',
+            //   icon: 'add',
+            //   content: 'Create New Book',
+            //   onClick: this.onBookCreate
+            // }}
+            fluid
+            actionPosition="left"
+            placeholder="Herman Melville"
+            onChange={this.handleAuthorChange}
+          />
+        </Grid.Column>
+        <Button color= 'teal'
+                content= 'Create New Book'
+                onClick= {this.onBookCreate}>
+        </Button>
         <Grid.Column width={16}>
           <Divider />
         </Grid.Column>
       </Grid.Row>
+      
     )
   }
 
@@ -168,8 +198,11 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
                   checked={book.done}
                 />
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {book.name}
+              <Grid.Column width={5} verticalAlign="middle">
+                {book.title}
+              </Grid.Column>
+              <Grid.Column width={5} verticalAlign="middle">
+                {book.author}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
                 {book.dueDate}

@@ -1,7 +1,8 @@
 export interface Book {
   bookId: string
   createdAt: string
-  name: string
+  title: string
+  author: string
   dueDate: string
   done: boolean
   attachmentUrl?: string

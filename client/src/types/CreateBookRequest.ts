@@ -1,4 +1,5 @@
 export interface CreateBookRequest {
-  name: string
+  title: string
+  author: string
   dueDate: string
 }
