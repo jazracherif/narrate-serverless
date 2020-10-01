@@ -1,0 +1,42 @@
+service:
+  name: narrate-books-web-app
+
+plugins:
+  - serverless-finch
+
+provider:
+  name: aws
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  environment:
+    WEBSITE_S3_BUCKET: narrate-serverless-web-${self:provider.stage}-193123xdka
+
+custom:
+  client:
+    bucketName: ${self:provider.environment.WEBSITE_S3_BUCKET}
+    distributionFolder: build/
+    errorDocument: index.html
+    indexDocument: index.html
+
+resources:
+  Resources:
+    WebsiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.WEBSITE_S3_BUCKET}
+        
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.WEBSITE_S3_BUCKET}/*'
+        Bucket: !Ref WebsiteBucket
