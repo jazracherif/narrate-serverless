@@ -63,6 +63,10 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     this.props.history.push(`/Books/${bookId}/edit`)
   }
 
+  onImportButtonClick = () => {
+    this.props.history.push(`/Books/import`)
+  }
+
   onBookCreate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
       const newBook = await createBook(this.props.auth.getIdToken(), {
@@ -177,6 +181,15 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
     return (
       <Grid.Row>
         <Grid.Column width={16}>
+             <Button color= 'teal'
+                content= 'Import GoodReads Library'
+                onClick= {this.onImportButtonClick}>
+            </Button>
+        </Grid.Column>
+        <Divider />
+        Create a New Book:
+        <Divider />
+        <Grid.Column width={16}>
             Book Title:
           <Input
             fluid
@@ -253,7 +266,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
               <Grid.Column width={4} verticalAlign="middle">
                 {book.author}
               </Grid.Column>
-              <Grid.Column width={1} floated="right">
+              {/* <Grid.Column width={1} floated="right">
                 <Button
                   icon
                   color="blue"
@@ -261,7 +274,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
                 >
                   <Icon name="pencil" />
                 </Button>
-              </Grid.Column>
+              </Grid.Column> */}
               <Grid.Column width={1} floated="right">
                 <Button
                   icon

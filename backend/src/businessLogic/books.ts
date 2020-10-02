@@ -26,6 +26,11 @@ export async function generateAndUploadUrl(bookId: string, userId: string) {
     return url
 }
 
+export async function generateAndUploadLibraryUrl(userId: string) {
+    const url = bookAccess.getSignedLibraryUrl(userId)
+    return url
+}
+
 
 export async function createBook(userId: string,
                                  title: string, 

@@ -15,7 +15,8 @@ export class BookAccess {
     private readonly bookTable = process.env.BOOK_TABLE,
     private readonly bookIndexTable = process.env.USER_ID_INDEX,
     private readonly urlExpiration = process.env.URL_EXPIRATION,
-    private readonly imagesS3Bucket = process.env.IMAGES_S3_BUCKET
+    private readonly imagesS3Bucket = process.env.IMAGES_S3_BUCKET,
+    private readonly libraryS3Bucket = process.env.GOODREAD_LIBRARY_S3_BUCKET
 
     ) { }
 
@@ -114,6 +115,17 @@ export class BookAccess {
                     Expires: Number(this.urlExpiration)
                     })
                 }
+
+    getSignedLibraryUrl(userId: string){
+        console.log('Get Signed URL for User ', userId)
+
+        return s3.getSignedUrl('putObject', {
+                    Bucket: this.libraryS3Bucket,
+                    Key: userId,
+                    Expires: Number(this.urlExpiration)
+                    })
+                }
+            
 }
 
 function createDynamoDBClient() {

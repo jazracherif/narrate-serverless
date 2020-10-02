@@ -7,7 +7,7 @@ import { EditBook } from './components/EditBook'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Books } from './components/Books'
-
+import { ImportBooks } from './components/importBooks'
 export interface AppProps {}
 
 export interface AppProps {
@@ -104,6 +104,13 @@ export default class App extends Component<AppProps, AppState> {
           }}
         />
 
+        <Route
+          path="/books/import"
+          exact
+          render={props => {
+            return <ImportBooks {...props} auth={this.props.auth} />
+          }}
+        />
         <Route component={NotFound} />
       </Switch>
     )
