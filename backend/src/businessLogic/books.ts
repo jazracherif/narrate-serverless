@@ -36,7 +36,8 @@ export async function createBook(userId: string,
                                  title: string, 
                                  author: string,
                                  rating: number,
-                                 review: string): Promise<BookItem>{
+                                 review: string,
+                                 done: boolean): Promise<BookItem>{
 
     const bookId = uuid.v4()
     const createdAt = new Date().toISOString()
@@ -48,7 +49,7 @@ export async function createBook(userId: string,
         title: title,
         author: author,
         rating: rating,
-        done: false,
+        done: done,
         attachmentUrl: '',
         review: review
     }

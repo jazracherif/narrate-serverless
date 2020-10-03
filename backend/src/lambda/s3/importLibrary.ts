@@ -50,11 +50,18 @@ async function processLibraryFile(record: S3EventRecord) {
         const review = record["My Review"]
         console.log("add Book", title, author, rating, review)
         
+        const shelf = record["Exclusive Shelf"]
+        let done:boolean = false
+        if (shelf == "read"){
+            done = true
+        }
+
         await createBook(key,
                          title,
                          author,
                          rating,
-                         review)
+                         review,
+                         done)
     }            
 }
 

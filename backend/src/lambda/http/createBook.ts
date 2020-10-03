@@ -19,7 +19,8 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
                                           newBook.title,
                                           newBook.author, 
                                           newBook.rating,
-                                          newBook.review)
+                                          newBook.review,
+                                          false)
 
         return {
             statusCode: 201,

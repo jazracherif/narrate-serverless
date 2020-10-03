@@ -79,6 +79,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         books: [...this.state.books, newBook],
         newBookTitle: ''
       })
+
     } catch {
       alert('Book creation failed')
     }
@@ -195,7 +196,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
             fluid
             actionPosition="left"
             placeholder="Moby Dick"
-            onChange={this.handleTitleChange}
+            onBlur={this.handleTitleChange}
           />
         </Grid.Column>
         <Grid.Column width={16}>
@@ -204,7 +205,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
             fluid
             actionPosition="left"
             placeholder="Herman Melville"
-            onChange={this.handleAuthorChange}
+            onBlur={this.handleAuthorChange}
           />
         </Grid.Column>
         <Button color= 'teal'
@@ -291,10 +292,13 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
                   <textarea
                     rows={2}
                     cols={50}
-                    value={book.review}
-                    onChange={(event) => this.handleReviewChange(event.target.value, pos)} 
+                    defaultValue={book.review}
+                    onBlur={(event) => this.handleReviewChange(event.target.value, pos)} 
                     >
                   </textarea>
+             </Grid.Column>
+             <Grid.Column width={16} floated="left">
+
                   <Button color= 'teal'
                      content= 'Update Review'
                      onClick= {()=>this.onSubmitReview(pos)}>
