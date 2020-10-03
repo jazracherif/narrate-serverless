@@ -240,6 +240,10 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
 
   renderBooksList() {
     return (
+      <>
+        <div>Number of books: {this.state.books.length}</div>
+        <Divider/>
+
       <Grid padded>
         {this.state.books.map((book, pos) => {
           return (
@@ -267,15 +271,6 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
               <Grid.Column width={4} verticalAlign="middle">
                 {book.author}
               </Grid.Column>
-              {/* <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="blue"
-                  onClick={() => this.onEditButtonClick(book.bookId)}
-                >
-                  <Icon name="pencil" />
-                </Button>
-              </Grid.Column> */}
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
@@ -285,9 +280,6 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {/* {book.attachmentUrl && (
-                 <embed src={book.attachmentUrl}/>
-              )} */}
               <Grid.Column width={16} floated="left">
                   <textarea
                     rows={2}
@@ -312,6 +304,7 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
           )
         })}
       </Grid>
+      </>
     )
   }
 

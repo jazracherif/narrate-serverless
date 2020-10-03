@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link, Route, Router, Switch } from 'react-router-dom'
 import { Grid, Menu, Segment } from 'semantic-ui-react'
+import { Helmet } from 'react-helmet'
 
 import Auth from './auth/Auth'
 import { EditBook } from './components/EditBook'
@@ -16,6 +17,8 @@ export interface AppProps {
 }
 
 export interface AppState {}
+
+const TITLE = 'Narrate'
 
 export default class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -35,6 +38,11 @@ export default class App extends Component<AppProps, AppState> {
 
   render() {
     return (
+    <>
+      <Helmet>
+        <title>{ TITLE }</title>
+      </Helmet>
+
       <div>
         <Segment style={{ padding: '8em 0em' }} vertical>
           <Grid container stackable verticalAlign="middle">
@@ -50,6 +58,7 @@ export default class App extends Component<AppProps, AppState> {
           </Grid>
         </Segment>
       </div>
+    </>
     )
   }
 
