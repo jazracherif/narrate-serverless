@@ -92,8 +92,8 @@ export class ImportBooks extends React.PureComponent<
 
     return (
       <div>
-        {this.state.uploadState === UploadState.FetchingPresignedUrl && <p>Uploading image metadata</p>}
-        {this.state.uploadState === UploadState.UploadingFile && <p>Uploading file</p>}
+        {this.state.uploadState === UploadState.FetchingPresignedUrl && <p>Getting file metadata </p>}
+        {this.state.uploadState === UploadState.UploadingFile && <p>Uploading Goodreads library</p>}
         <Button
           loading={this.state.uploadState !== UploadState.NoUpload}
           type="submit"
