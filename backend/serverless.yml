@@ -169,29 +169,6 @@ functions:
           - xray:PutTelemetryRecords
         Resource: "*"
 
-  # GenerateUploadUrl:
-  #   handler: src/lambda/http/generateUploadUrl.handler
-  #   events:
-  #     - http:
-  #         method: post
-  #         path: books/{bookId}/attachment
-  #         authorizer: Auth
-  #         cors: true
-  #   iamRoleStatements:
-  #     - Effect: Allow
-  #       Action:
-  #         - dynamodb:UpdateItem
-  #       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOK_TABLE}
-  #     - Effect: Allow
-  #       Action:
-  #         - s3:PutObject
-  #       Resource: "arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*"
-  #     - Effect: Allow
-  #       Action:
-  #         - xray:PutTraceSegments
-  #         - xray:PutTelemetryRecords
-  #       Resource: "*"
-
   GenUploadLibUrl:
     handler: src/lambda/http/generateUploadLibraryUrl.handler
     events:

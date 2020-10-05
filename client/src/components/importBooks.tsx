@@ -76,7 +76,7 @@ export class ImportBooks extends React.PureComponent<
             <label>File</label>
             <input
               type="file"
-              accept="text/*"
+              accept=".csv"
               placeholder="File to upload"
               onChange={this.handleFileChange}
             />
