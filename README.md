@@ -20,12 +20,13 @@ The application keeps track of books items, and each book item contains the foll
 
 ## Implementation
 
-The core of the backend application is implemented using AWS serverless functions, backed by a dynamoDB storage, and a Simple Notification Service (SNS) for handing asynchronously the importation of a Good Reads library. Access to the backend is through AWS API Gateway.
+The core of the backend application is implemented using AWS serverless functions, backed by a dynamoDB storage, and a Simple Notification Service (SNS) for handing asynchronously the importation of a Goodreads library. Access to the backend is through AWS API Gateway.
 
+The following APIs are implemented:
 
-* `Auth` - this function implements a custom authorizer for API Gateway that should be added to all other functions.
+* `Auth` - this function implements a custom authorizer for API Gateway that is used by all functions requiring authentication.
 
-* `GetBooks` - should return all books for a current user. A user id is extracted from a JWT token that is sent by the frontend using the [auth0](https://auth0.com) service
+* `GetBooks` -  returns all books for a current user. A user id is extracted from a JWT token that is sent by the frontend using the [auth0](https://auth0.com) service
 
 It returns data that looks like this:
 
@@ -85,7 +86,7 @@ Example Response:
 }
 ```
 
-* `UpdateBook` - should update a Book item created by a current user. A shape of data send by a client application to this function can be found in the `backend/src/models/update-book-request.json` file
+* `UpdateBook` -  updates a Book item created by a current user. A shape of data send by a client application to this function can be found in the `backend/src/models/update-book-request.json` file
 
 Example Request:
 
@@ -107,9 +108,9 @@ It should return an empty body.
 
 It should return an empty body.
 
-* `GenerateUploadLibraryUrl` - returns a pre-signed URL that can be used to upload a goodreads library list. Once a 
+* `GenerateUploadLibraryUrl` - returns a pre-signed URL that can be used to upload a goodreads library list.
 
-It should return a JSON object that looks like this:
+It returns a JSON object that looks like this:
 
 ```json
 {
@@ -119,15 +120,15 @@ It should return a JSON object that looks like this:
 
 ### Good Read library import
 
-It is possible to ingest a goodread library into one's own account. In order to do so, the client app will get a signed URL using the above API and upload a `.csv` file that corresponds to an exported goodreads library (see instructions [here](https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590))
+It is possible to ingest a goodread library into one's own account. In order to do so, the client app will need to get a signed URL using the above API and upload a `.csv` file that corresponds to an exported goodreads library (see instructions [here](https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590))
 
-One the file is uploaded onto S3, it will generate a notification message and push it to AWS SNS queue, and will then be picked up by a separate lambda function for consumption. This funciton will walkthorugh every item in the `.csv` file and add the item to dynamoDB.
+One the file is uploaded onto S3, it will generate a notification record and send it to AWS SNS queue, which will then be picked up by a separate lambda function for consumption. This function will iterate over every item in the `.csv` file and add the item to dynamoDB.
 
-An example file has been provided under goodreads_library_export.csv to test this functionality
+An example file has been provided under `goodreads_library_export.csv` to test this functionality. The frontend provide a `import goodreads library` button for this purpose.
 
 ## Frontend
 
-The `client` folder contains a web application that can use the API that should be developed in the project.
+The `client` folder contains a web application that uses the API above to provide the user interface for management the book list.
 
 This frontend relies on the `config.ts` file in the `client/src` folder to find out about the API Endpoint and the auth0 credentials.
 
@@ -199,7 +200,7 @@ Provide variables for the collection (similarly to how this was done in the cour
 ## Improvements
 
 There are several improvements for the projects:
-- For large book list, implement pagination to get list of books incrementally.
-- Additional checks for the goodreads imports, specially validating a valid file has been submitted.
+- For large book lists, implement pagination to get list of books incrementally.
+- Add Additional checks for the goodreads imports, specially checking a valid file has been submitted.
 - Only import from goodreads those books that haven't already been imported
-- Additional unittest can be added for validation the backend businessLogic and dataLayer components. 
+- Add additional unittests for validating the backend businessLogic and dataLayer components. 
