@@ -1,96 +1,101 @@
-# Serverless TODO
+# Book List Application
 
-To implement this project, you need to implement a simple TODO application using AWS Lambda and Serverless framework. Search for all comments starting with the `TODO:` in the code to find the placeholders that you need to implement.
+This application allows one to maintain their book list, reading progress, ratings and book reviews. It also allows one to import their goodreads library.
 
-# Functionality of the application
 
-This application will allow creating/removing/updating/fetching TODO items. Each TODO item can optionally have an attachment image. Each user only has access to TODO items that he/she has created.
+## Functionality
 
-# TODO items
+The backend application allows creating/removing/updating and fetching Book items. Each user only has access to Book items that he/she has created and must be authenticated before using the application
 
-The application should store TODO items, and each TODO item contains the following fields:
+The application keeps track of books items, and each book item contains the following fields:
 
-* `todoId` (string) - a unique id for an item
+* `bookId` (string) - a unique id for a book item
 * `createdAt` (string) - date and time when an item was created
-* `name` (string) - name of a TODO item (e.g. "Change a light bulb")
-* `dueDate` (string) - date and time by which an item should be completed
-* `done` (boolean) - true if an item was completed, false otherwise
-* `attachmentUrl` (string) (optional) - a URL pointing to an image attached to a TODO item
+* `title` (string) - The title of a book item (e.g. "Moby Dick")
+* `Author` (string) - The author of a book item (e.g. "Herman Melville")
+* `rating` (string) - The user rating given to a book
+* `done` (boolean) - true if a book is marked as read, false otherwise
+* `review` (string) - The user review 
 
-You might also store an id of a user who created a TODO item.
+
+## Implementation
+
+The core of the backend application is implemented using AWS serverless functions, backed by a dynamoDB storage, and a Simple Notification Service (SNS) for handing asynchronously the importation of a Good Reads library. Access to the backend is through AWS API Gateway.
 
 
-# Functions to be implemented
+* `Auth` - this function implements a custom authorizer for API Gateway that should be added to all other functions.
 
-To implement this project, you need to implement the following functions and configure them in the `serverless.yml` file:
+* `GetBooks` - should return all books for a current user. A user id is extracted from a JWT token that is sent by the frontend using the [auth0](https://auth0.com) service
 
-* `Auth` - this function should implement a custom authorizer for API Gateway that should be added to all other functions.
-
-* `GetTodos` - should return all TODOs for a current user. A user id can be extracted from a JWT token that is sent by the frontend
-
-It should return data that looks like this:
+It returns data that looks like this:
 
 ```json
 {
-  "items": [
-    {
-      "todoId": "123",
-      "createdAt": "2019-07-27T20:01:45.424Z",
-      "name": "Buy milk",
-      "dueDate": "2019-07-29T20:01:45.424Z",
-      "done": false,
-      "attachmentUrl": "http://example.com/image.png"
-    },
-    {
-      "todoId": "456",
-      "createdAt": "2019-07-27T20:01:45.424Z",
-      "name": "Send a letter",
-      "dueDate": "2019-07-29T20:01:45.424Z",
-      "done": true,
-      "attachmentUrl": "http://example.com/image.png"
-    },
-  ]
+    "items": [
+        {
+            "bookId": "ef7e8eaf-98d3-4597-a6cd-88a90047398b",
+            "rating": 4,
+            "attachmentUrl": "",
+            "createdAt": "2020-10-03T04:44:48.307Z",
+            "review": "Great Book",
+            "done": true,
+            "author": "R.R. Palmer",
+            "title": "The Age of the Democratic Revolution: A Political History of Europe & America 1760-1800"
+        },
+        {
+            "bookId": "029320ea-b55e-4680-84a6-f141cd6bee4f",
+            "rating": 0,
+            "attachmentUrl": "",
+            "createdAt": "2020-10-03T04:44:50.562Z",
+            "review": "",
+            "done": false,
+            "author": "Frederick Schauer",
+            "title": "Thinking Like a Lawyer: A New Introduction to Legal Reasoning"
+        }
+    ]
 }
 ```
 
-* `CreateTodo` - should create a new TODO for a current user. A shape of data send by a client application to this function can be found in the `CreateTodoRequest.ts` file
+* `CreateBook` -  creates a new Book for a current user. A shape of data send by a client application to this function can be found in the `backend/src/models/create-book-request.json` file
 
-It receives a new TODO item to be created in JSON format that looks like this:
-
+Example Request:
 ```json
 {
-  "createdAt": "2019-07-27T20:01:45.424Z",
-  "name": "Buy milk",
-  "dueDate": "2019-07-29T20:01:45.424Z",
-  "done": false,
-  "attachmentUrl": "http://example.com/image.png"
+	"title": "Moby Dick",
+	"author": "Herman Melville",
+	"rating": 0,
+	"review": ""
 }
 ```
 
-It should return a new TODO item that looks like this:
+Example Response:
 
 ```json
 {
-  "item": {
-    "todoId": "123",
-    "createdAt": "2019-07-27T20:01:45.424Z",
-    "name": "Buy milk",
-    "dueDate": "2019-07-29T20:01:45.424Z",
-    "done": false,
-    "attachmentUrl": "http://example.com/image.png"
-  }
+    "item": {
+        "bookId": "df2e2858-6231-4760-a4e4-691fd0649216",
+        "createdAt": "2020-10-05T20:07:28.516Z",
+        "title": "Moby Dick",
+        "author": "Herman Melville",
+        "rating": 0,
+        "done": false,
+        "attachmentUrl": "",
+        "review": ""
+    }
 }
 ```
 
-* `UpdateTodo` - should update a TODO item created by a current user. A shape of data send by a client application to this function can be found in the `UpdateTodoRequest.ts` file
+* `UpdateBook` - should update a Book item created by a current user. A shape of data send by a client application to this function can be found in the `backend/src/models/update-book-request.json` file
 
-It receives an object that contains three fields that can be updated in a TODO item:
+Example Request:
 
 ```json
 {
-  "name": "Buy bread",
-  "dueDate": "2019-07-29T20:01:45.424Z",
-  "done": true
+	"title": "Moby Dick",
+	"author": "Herman Melville",
+	"rating": 1,
+	"done": true,
+	"review": ""
 }
 ```
 
@@ -98,130 +103,42 @@ The id of an item that should be updated is passed as a URL parameter.
 
 It should return an empty body.
 
-* `DeleteTodo` - should delete a TODO item created by a current user. Expects an id of a TODO item to remove.
+* `DeleteBooks` -  deletes a Book item created by a current user. Expects an id of a Book item to remove.
 
 It should return an empty body.
 
-* `GenerateUploadUrl` - returns a pre-signed URL that can be used to upload an attachment file for a TODO item.
+* `GenerateUploadLibraryUrl` - returns a pre-signed URL that can be used to upload a goodreads library list. Once a 
 
 It should return a JSON object that looks like this:
 
 ```json
 {
-  "uploadUrl": "https://s3-bucket-name.s3.eu-west-2.amazonaws.com/image.png"
+  "uploadUrl": "https://book-app-goodreads-bucket-dev.s3.amazonaws.com/..."
 }
 ```
 
-All functions are already connected to appropriate events from API Gateway.
+### Good Read library import
 
-An id of a user can be extracted from a JWT token passed by a client.
+It is possible to ingest a goodread library into one's own account. In order to do so, the client app will get a signed URL using the above API and upload a `.csv` file that corresponds to an exported goodreads library (see instructions [here](https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590))
 
-You also need to add any necessary resources to the `resources` section of the `serverless.yml` file such as DynamoDB table and S3 bucket.
+One the file is uploaded onto S3, it will generate a notification message and push it to AWS SNS queue, and will then be picked up by a separate lambda function for consumption. This funciton will walkthorugh every item in the `.csv` file and add the item to dynamoDB.
 
+An example file has been provided under goodreads_library_export.csv to test this functionality
 
-# Frontend
+## Frontend
 
 The `client` folder contains a web application that can use the API that should be developed in the project.
 
-This frontend should work with your serverless application once it is developed, you don't need to make any changes to the code. The only file that you need to edit is the `config.ts` file in the `client` folder. This file configures your client application just as it was done in the course and contains an API endpoint and Auth0 configuration:
+This frontend relies on the `config.ts` file in the `client/src` folder to find out about the API Endpoint and the auth0 credentials.
 
-```ts
-const apiId = '...' API Gateway id
-export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com/dev`
+### Authentication
 
-export const authConfig = {
-  domain: '...',    // Domain from Auth0
-  clientId: '...',  // Client id from an Auth0 application
-  callbackUrl: 'http://localhost:3000/callback'
-}
-```
-
-## Authentication
-
-To implement authentication in your application, you would have to create an Auth0 application and copy "domain" and "client id" to the `config.ts` file in the `client` folder. We recommend using asymmetrically encrypted JWT tokens.
-
-# Best practices
-
-To complete this exercise, please follow the best practices from the 6th lesson of this course.
-
-## Logging
-
-The starter code comes with a configured [Winston](https://github.com/winstonjs/winston) logger that creates [JSON formatted](https://stackify.com/what-is-structured-logging-and-why-developers-need-it/) log statements. You can use it to write log messages like this:
-
-```ts
-import { createLogger } from '../../utils/logger'
-const logger = createLogger('auth')
-
-// You can provide additional information with every log statement
-// This information can then be used to search for log statements in a log storage system
-logger.info('User was authorized', {
-  // Additional information stored with a log statement
-  key: 'value'
-})
-```
+An auth0 domain has been created to handle authentication for this application. The implementation of the interactions with auth0 are implemented in `client/src/auth/Auth.js`
 
 
-# Grading the submission
+## How to run the application
 
-Once you have finished developing your application, please set `apiId` and Auth0 parameters in the `config.ts` file in the `client` folder. A reviewer would start the React development server to run the frontend that should be configured to interact with your serverless application.
-
-**IMPORTANT**
-
-*Please leave your application running until a submission is reviewed. If implemented correctly it will cost almost nothing when your application is idle.*
-
-# Suggestions
-
-To store TODO items, you might want to use a DynamoDB table with local secondary index(es). A create a local secondary index you need to create a DynamoDB resource like this:
-
-```yml
-
-TodosTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    AttributeDefinitions:
-      - AttributeName: partitionKey
-        AttributeType: S
-      - AttributeName: sortKey
-        AttributeType: S
-      - AttributeName: indexKey
-        AttributeType: S
-    KeySchema:
-      - AttributeName: partitionKey
-        KeyType: HASH
-      - AttributeName: sortKey
-        KeyType: RANGE
-    BillingMode: PAY_PER_REQUEST
-    TableName: ${self:provider.environment.TODOS_TABLE}
-    LocalSecondaryIndexes:
-      - IndexName: ${self:provider.environment.INDEX_NAME}
-        KeySchema:
-          - AttributeName: partitionKey
-            KeyType: HASH
-          - AttributeName: indexKey
-            KeyType: RANGE
-        Projection:
-          ProjectionType: ALL # What attributes will be copied to an index
-
-```
-
-To query an index you need to use the `query()` method like:
-
-```ts
-await this.dynamoDBClient
-  .query({
-    TableName: 'table-name',
-    IndexName: 'index-name',
-    KeyConditionExpression: 'paritionKey = :paritionKey',
-    ExpressionAttributeValues: {
-      ':paritionKey': partitionKeyValue
-    }
-  })
-  .promise()
-```
-
-# How to run the application
-
-## Backend
+### Backend
 
 To deploy an application run the following commands:
 
@@ -231,7 +148,7 @@ npm install
 sls deploy -v
 ```
 
-## Frontend
+### Frontend
 
 To run a client application first edit the `client/src/config.ts` file to set correct parameters. And then run the following commands:
 
@@ -241,11 +158,19 @@ npm install
 npm run start
 ```
 
-This should start a development server with the React application that will interact with the serverless TODO application.
+This should start a development server with the React application that will interact with the serverless Book application.
 
-# Postman collection
+It is also possible to deploy the client onto AWS S3 bucket using the `serverless.yml` file in the `client` folder
 
-An alternative way to test your API, you can use the Postman collection that contains sample requests. You can find a Postman collection in this project. To import this collection, do the following.
+```
+cd client
+npm run build
+sls client deploy -v
+```
+
+## Postman collection
+
+A postman file has also been included for API integration tests. See `Narrate Serverless - Book Management.postman_collection` and follow the below instruction for loading the file
 
 Click on the import button:
 
@@ -269,3 +194,12 @@ Right click on the imported collection to set variables for the collection:
 Provide variables for the collection (similarly to how this was done in the course):
 
 ![Alt text](images/import-collection-5.png?raw=true "Image 5")
+
+
+## Improvements
+
+There are several improvements for the projects:
+- For large book list, implement pagination to get list of books incrementally.
+- Additional checks for the goodreads imports, specially validating a valid file has been submitted.
+- Only import from goodreads those books that haven't already been imported
+- Additional unittest can be added for validation the backend businessLogic and dataLayer components. 

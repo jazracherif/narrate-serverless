@@ -25,9 +25,9 @@ export const handler: SNSHandler = async (event: SNSEvent) => {
   }
 }
 
-async function processLibraryFile(record: S3EventRecord) {
-    console.log(record)
-    const key = record.s3.object.key
+async function processLibraryFile(s3_record: S3EventRecord) {
+    const key = s3_record.s3.object.key
+    
     console.log('Processing S3 item with bucket/key: ', libraryBucketName, key)
 
     const response = await s3
@@ -48,13 +48,14 @@ async function processLibraryFile(record: S3EventRecord) {
         const author = record["Author"]
         const rating = Number(record["My Rating"])
         const review = record["My Review"]
-        console.log("add Book", title, author, rating, review)
         
         const shelf = record["Exclusive Shelf"]
         let done:boolean = false
         if (shelf == "read"){
             done = true
         }
+
+        console.log("add Book", title, author, rating, review)
 
         await createBook(key,
                          title,
@@ -64,29 +65,3 @@ async function processLibraryFile(record: S3EventRecord) {
                          done)
     }            
 }
-
-// async function processImage2(record: S3EventRecord) {
-//     const key = record.s3.object.key
-//     console.log('Processing S3 item with bucket/key: ', libraryBucketName, key)
-  
-//     let s3Stream = s3.getObject({
-//                 Bucket: libraryBucketName,
-//                 Key: key
-//                 }).createReadStream();
-     
-//     const parser = s3Stream.pipe(csvParser({columns: true}))
-          
-//     for await (const record of parser) {
-//         const title = record["Title"]
-//         const author = record["Author"]
-//         const rating = Number(record["My Rating"])
-//         const review = record["My Review"]
-//         console.log("add Book", title, author, rating, review)
-
-//         await createBook(key,
-//                          title,
-//                          author,
-//                          rating,
-//                          review)
-//     }
-// }

@@ -4,7 +4,6 @@ import { Grid, Menu, Segment } from 'semantic-ui-react'
 import { Helmet } from 'react-helmet'
 
 import Auth from './auth/Auth'
-import { EditBook } from './components/EditBook'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Books } from './components/Books'
@@ -102,14 +101,6 @@ export default class App extends Component<AppProps, AppState> {
           exact
           render={props => {
             return <Books {...props} auth={this.props.auth} />
-          }}
-        />
-
-        <Route
-          path="/books/:bookId/edit"
-          exact
-          render={props => {
-            return <EditBook {...props} auth={this.props.auth} />
           }}
         />
 

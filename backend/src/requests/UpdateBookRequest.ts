@@ -1,5 +1,5 @@
 /**
- * Fields in a request to update a single TODO item.
+ * Fields in a request to update a single Book item.
  */
 export interface UpdateBookRequest {
   title: string
